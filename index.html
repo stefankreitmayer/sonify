@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta name="keywords" content="speech,synthesis,toy,sound,experimental">
+    <meta name="description" content="Make up silly words in German">
+    <meta name="author" content="Stefan Kreitmayer">
+    <title>Sonify</title>
+    <script type="text/javascript" src="target/elm.js"></script>
+
+    <style>
+      h2 {
+        margin-top: 35vh;
+      }
+      button {
+        display: table-cell;
+        border: 1px solid #555;
+        width: 120px;
+        height: 120px;
+        margin: 0;
+      }
+      button + button {
+        margin-left: 27px;
+      }
+      button:focus {
+        outline: 0;
+      }
+      footer {
+        position: fixed;
+        bottom: 27px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+      }
+      .Screen {
+        max-width: 320px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .ButtonRow {
+        display: table;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+
+  <body style="margin: 0; padding: 0; background-color: #eee;">
+  </body>
+
+  <script type="text/javascript">
+    var app = Elm.Main.fullscreen();
+
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    var oscillator = audioCtx.createOscillator();
+    oscillator.type = 'sine';
+    oscillator.start();
+
+    var gainNode = audioCtx.createGain();
+    gainNode.gain.value = 0;
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    // Triggered from Elm
+    app.ports.play.subscribe(function(freq){
+      console.log('on')
+      oscillator.frequency.setValueAtTime( freq, 0 )
+      gainNode.gain.value = 1;
+      setTimeout(function(){
+      console.log('off')
+        gainNode.gain.value = 0;
+      }, 100);
+    });
+  </script>
+</html>
