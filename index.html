@@ -54,25 +54,22 @@
 
     var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    var oscillator = audioCtx.createOscillator();
-    oscillator.type = 'sine';
-    oscillator.start();
-
-    var gainNode = audioCtx.createGain();
-    gainNode.gain.value = 0;
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
+    var createVoice = function(freq){
+      var osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      osc.start();
+      osc.connect(audioCtx.destination);
+      setTimeout(function(){
+        console.log('off')
+        osc.stop();
+      }, 1000);
+    }
 
     // Triggered from Elm
     app.ports.play.subscribe(function(freq){
-      console.log('on')
-      oscillator.frequency.setValueAtTime( freq, 0 )
-      gainNode.gain.value = 1;
-      setTimeout(function(){
-      console.log('off')
-        gainNode.gain.value = 0;
-      }, 100);
+      console.log(freq);
+      createVoice(freq);
     });
   </script>
 </html>
